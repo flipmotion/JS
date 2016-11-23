@@ -102,31 +102,8 @@ document.addEventListener('DOMContentLoaded', function(){
   // btn2.build(document.body);
 
 
-  //Classes
-  function Menu(links) {
-    this.links = links.map(function(link){
-      return new Link(link);
-    });
-  }
-
-  function ContextMenu(links) {
-    Menu.call(this, links);
-  }
-
   function Link(link) {
     this.link = link;
-  }
-
-  //Method`s
-  Menu.prototype.getNode = function(){
-    var container = document.createElement('div');
-    container.classList.add('list-group');
-
-    this.links.forEach(function(link){
-      container.appendChild(link.getNode());
-    });
-
-    return container;
   }
 
   Link.prototype.getNode = function() {
@@ -138,8 +115,46 @@ document.addEventListener('DOMContentLoaded', function(){
     return li;
   }
 
+
+  function Menu(links) {
+    this.links = links.map(function(link){
+      return new Link(link);
+    });
+  }
+
+  Menu.prototype.getNode = function(){
+    var container = document.createElement('div');
+    container.classList.add('list-group');
+
+    this.links.forEach(function(link){
+      container.appendChild(link.getNode());
+    });
+
+    return container;
+  }
+
+
+  function ContextMenu(links) {
+    Menu.call(this, links);
+    this.container = this.render();
+    this.listener();
+  }
+
   ContextMenu.prototype = Object.create( Menu.prototype );
   ContextMenu.prototype.constructor = ContextMenu;
+
+  ContextMenu.getCoords = function(elm) {
+    let box = elm.getBoundingClientRect();
+
+    return {
+      top: box.top,
+      left: box.left,
+      right: document.body.clientWidth - box.right,
+      bottom: document.body.clientHeight - box.bottom,
+      width: box.right - box.left,
+      height: box.bottom - box.top
+    }
+  }
 
   ContextMenu.prototype.getNode = function() {
     console.log(this);
@@ -156,19 +171,19 @@ document.addEventListener('DOMContentLoaded', function(){
 
   ContextMenu.prototype.show = function(evt){
     evt.preventDefault();
-    let menuNode = document.querySelector('.contextmenu');
+    let menuNode = this.container;
     
     if (evt.type !== 'click') {
       menuNode.classList.toggle('hidden');
     } else {
       menuNode.classList.add('hidden');
     }
+    this.coodrs(evt);
   }
 
   ContextMenu.prototype.coodrs = function(evt){
     evt.preventDefault();
-
-    let menuNode = document.querySelector('.contextmenu');
+    let menuNode = this.container;
     
     let pos = {
       'x': evt.x,
@@ -177,20 +192,10 @@ document.addEventListener('DOMContentLoaded', function(){
     
     menuNode.style.top = `${pos.y}px`;
     menuNode.style.left = `${pos.x}px`;
-    let coords = function(elm) {
-      let box = elm.getBoundingClientRect();
-
-      return {
-        top: box.top,
-        left: box.left,
-        right: document.body.clientWidth - box.right,
-        bottom: document.body.clientHeight - box.bottom,
-        width: box.right - box.left,
-        height: box.bottom - box.top
-      }
-    }
+    let coords = this.constructor.getCoords;
 
     console.log(`top: ${coords(menuNode).top}, right ${coords(menuNode).right}, bottom ${coords(menuNode).bottom}, left ${coords(menuNode).left}`);
+
     if (coords(menuNode).right < 0) {
       menuNode.style.left = `${pos.x - coords(menuNode).width}px`;
       console.log('out right!');
@@ -203,15 +208,12 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 
   ContextMenu.prototype.listener = function() {
-    let menu = ContextMenu.prototype.show;
-    let menuCoords = ContextMenu.prototype.coodrs;
+    let menu = ContextMenu.prototype.show.bind(this);
+    let menuCoords = ContextMenu.prototype.coodrs.bind(this);
 
     document.body.addEventListener('click', menu, false);
     document.body.addEventListener('contextmenu', menu, false);
-    document.body.addEventListener('contextmenu', menuCoords, false);
   }
 
-  var menu = new ContextMenu(['menu item 1', 'menu item 2', 'menu item 3']);
-  menu.render();
-  menu.listener();
+  new ContextMenu(['menu item 1', 'menu item 2', 'menu item 3']);
 });
