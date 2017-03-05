@@ -25,74 +25,74 @@ import sourcemaps from 'gulp-sourcemaps';
 
 
 gulp.task('sass', function() {
-	return gulp.src('build/sass/*.scss')
-	.pipe(sourcemaps.init())
-	.pipe(sass({outputStyle: 'compressed'}).on('error', sass.logError))
-	.pipe(autoprefixer('last 2 version', 'safari 5', 'ie 8', 'ie 9', 'opera 12.1', 'ios 6', 'android 4'))
-	.pipe(sourcemaps.write())
-	.pipe(rename({suffix: '.min'}))
-	.pipe(connect.reload())
-	.pipe(notify({
-		message: 'sass!'
-	}))
-	.pipe(gulp.dest('assets/css'));
+  return gulp.src('build/sass/*.scss')
+  .pipe(sourcemaps.init())
+  .pipe(sass({outputStyle: 'compressed'}).on('error', sass.logError))
+  .pipe(autoprefixer('last 2 version', 'safari 5', 'ie 8', 'ie 9', 'opera 12.1', 'ios 6', 'android 4'))
+  .pipe(sourcemaps.write())
+  .pipe(rename({suffix: '.min'}))
+  .pipe(connect.reload())
+  .pipe(notify({
+    message: 'sass!'
+  }))
+  .pipe(gulp.dest('assets/css'));
 });
 gulp.task('img', function () {
-	return gulp.src('build/img/*')
-	.pipe(imagemin({
-		progressive: true,
-		svgoPlugins: [{removeViewBox: false}],
-		use: [pngquant()]
-	}))
-	.pipe(gulp.dest('assets/img'))
-	.pipe(connect.reload())
-	.pipe(notify({
-		message: 'img`s!'
-	}));
+  return gulp.src('build/img/*')
+  .pipe(imagemin({
+    progressive: true,
+    svgoPlugins: [{removeViewBox: false}],
+    use: [pngquant()]
+  }))
+  .pipe(gulp.dest('assets/img'))
+  .pipe(connect.reload())
+  .pipe(notify({
+    message: 'img`s!'
+  }));
 });
 //server
 gulp.task('server', function() {
-	connect.server({
-		root: '',
-		livereload: true
-	});
+  connect.server({
+    root: '',
+    livereload: true
+  });
 });
 //html
 gulp.task('html', function () {
-	gulp.src('*.html')
-	.pipe(connect.reload())
-	.pipe(notify({
-		message: 'html!'
-	}));
+  gulp.src('*.html')
+  .pipe(connect.reload())
+  .pipe(notify({
+    message: 'html!'
+  }));
 });
 //js
 gulp.task('ES6', function () {
-	var bundler = browserify({
-		entries: 'build/js/my/app.js',
-		debug: true
-	});
-	bundler.transform(babelify);
+  var bundler = browserify({
+    entries: 'build/js/my/app.js',
+    debug: true
+  });
+  bundler.transform(babelify);
 
-	bundler.bundle()
-	.on('error', function (err) { console.error(err); })
-	.pipe(source('app.js'))
-	.pipe(buffer())
-	.pipe(sourcemaps.init({ loadMaps: true }))
-	.pipe(rename({suffix: '.min'}))
-	.pipe(sourcemaps.write('./'))
-	.pipe(gulp.dest('assets/js'))
-	.pipe(connect.reload())
-	.pipe(
-		notify({ message: 'app.js' })
-		);
+  bundler.bundle()
+  .on('error', function (err) { console.error(err); })
+  .pipe(source('app.js'))
+  .pipe(buffer())
+  .pipe(sourcemaps.init({ loadMaps: true }))
+  .pipe(rename({suffix: '.min'}))
+  .pipe(sourcemaps.write('./'))
+  .pipe(gulp.dest('assets/js'))
+  .pipe(connect.reload())
+  .pipe(
+    notify({ message: 'app.js' })
+    );
 });
 
 //watcher
 gulp.task('watch', function () {
-	gulp.watch(['*.html'], ['html']);
-	gulp.watch(['build/js/my/*.js'], ['ES6']);
-	gulp.watch(['build/sass/*.scss'], ['sass']);
-	gulp.watch(['build/img/*'], ['img']);
+  gulp.watch(['*.html'], ['html']);
+  gulp.watch(['build/js/my/*.js'], ['ES6']);
+  gulp.watch(['build/sass/*.scss'], ['sass']);
+  gulp.watch(['build/img/*'], ['img']);
 });
 
 gulp.task('default', ['server', 'watch']);

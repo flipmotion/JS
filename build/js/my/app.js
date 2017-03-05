@@ -111,7 +111,6 @@ document.addEventListener('DOMContentLoaded', function(){
     li.style.cursor = 'pointer';
     li.classList.add('list-group-item');
     li.innerText = this.link;
-
     return li;
   }
 
@@ -132,7 +131,6 @@ document.addEventListener('DOMContentLoaded', function(){
 
     return container;
   }
-
 
   function ContextMenu(links) {
     Menu.call(this, links);
@@ -157,7 +155,6 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 
   ContextMenu.prototype.getNode = function() {
-    console.log(this);
     return Menu.prototype.getNode.call(this);
   }
 
