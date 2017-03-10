@@ -9,7 +9,7 @@ Object.find = function(path, obj) {
 const tripsNew = trips.slice(0);
 const tripsCustom = trips.slice(0);
 
-const compare = (a, b, reverse) => {
+const compare = (a, b, reverse = false) => {
   if(a === b || a === undefined || b === undefined) return 0;
   if(reverse) {
     return a > b ? -1 : 1;
